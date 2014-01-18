@@ -1,0 +1,11 @@
+{
+  "name": "font-fit",
+  "repo": "shennan/font-fit",
+  "description": "Attempts to resize fonts to fit the desired container.",
+  "version": "0.0.1",
+  "keywords": ["font", "resizer", "scaler", "fitter"],
+  "dependencies": {},
+  "scripts": ["index.js"],
+  "styles": [],
+  "license": "MIT"
+}

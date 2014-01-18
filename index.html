@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<!-- Yo! -->
+<head>
+	<title>Font-Fit Test Suit</title>
+	<style>
+
+		html, body{
+
+			margin:0;
+			padding:0;
+			border:0;
+
+			width:100%;
+			height:100%;
+
+		}
+
+		#container{
+
+			width:400px;
+			height:400px;
+
+		}
+
+		span{
+			white-space: nowrap;
+			font-size:12px;
+
+		}
+
+	</style>
+</head>
+<body>
+	<div id="container">
+		<div>
+			<span>Test</span>
+		</div>
+		<div>
+			<span>Test 2</span>
+		</div>
+	</div>
+	<script type="text/javascript" src="build/build.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script>
+
+		var node = document.documentElement.firstChild;
+if (node.nodeType != Node.COMMENT_NODE)
+  console.log("You should comment your code well!");
+
+		var fit = require('font-fit');
+
+		//fit(document.getElementById('container'));
+
+		//fit($('#container'), {min_size:5, max_size:7});
+
+	</script>
+</body>
+</html>
