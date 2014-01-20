@@ -1,17 +1,21 @@
+![Logo](lib/imgs/font-fit-logo@github.jpg)
+
 #font-fit
 
-Force your font's to fit their parent elements.
+Force your text nodes to fit their parent elements.
 
 ##usage
 
-First require the method:
+Call on the containing element:
 
     var fit = require('fit');
 
-Either pass an element:
-
     fit(document.getElementById('container'));
 
-Or a jQuery object:
+By default, *font-fit* ignores the containers height. If you want to base the calculations on containing height only:
 
-    fit($('#container'));
+    fit(document.getElementById('container'), {fit_width:false, fit_height:true});
+
+Or make sure that the text fits width and height:
+
+    fit(document.getElementById('container'), {fit_width:true, fit_height:true});

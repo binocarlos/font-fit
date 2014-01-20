@@ -4,7 +4,9 @@
   "description": "Attempts to resize fonts to fit the desired container.",
   "version": "0.0.1",
   "keywords": ["font", "resizer", "scaler", "fitter"],
-  "dependencies": {},
+  "dependencies": {
+  	"shennan/emify":"*"
+  },
   "scripts": ["index.js"],
   "styles": [],
   "license": "MIT"

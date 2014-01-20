@@ -199,98 +199,200 @@ require.relative = function(parent) {
 
   return localRequire;
 };
+require.register("shennan-emify/index.js", function(exports, require, module){
+module.exports = function(el){
+
+	// common conversions
+	var px_to_ems = 16;
+	var px_to_pt = .75;
+	var keywords_to_ems = {
+
+		'x-small':.625,
+		'small':.8,
+		'medium':1,
+		'large':1.125,
+		'x-large':1.5,
+		'xx-large':2
+
+	}
+
+	// travel up the container until we reach a font-size with absolute values, then return the calculated container font-size in pixels
+	var container_pixels = function(el, multiplier){
+
+		// if there is no style property, return our default pixels
+		if(typeof(el.style) === 'undefined'){ return px_to_ems; }
+
+		// default vars
+		multiplier = multiplier || 1;
+
+		// get the font size
+		var size = parseFloat(el.style.fontSize);
+
+		// get the operator or keyword
+		var operator = el.style.fontSize.replace(/[0-9]|\./g, '');
+
+		// if the font-size is an absolute value
+		if(operator === 'px' || operator === 'pt'){
+
+			// return the calculated pixels, stopping execution
+			return operator === 'px' ? size * multiplier : (size / px_to_pt) * multiplier;
+
+		// if the font-size is in ems 
+		}else if(operator === 'em'){
+
+			// adjust the multiplier accordingly
+			multiplier *= size;
+
+		// if the font-size is in percentage
+		}else if(operator === '%'){
+
+			// adjust the multiplier accordingly
+			multiplier *= (multiplier * size) / 100;
+
+		}
+
+		// if we haven't reached an absolute font-size and we haven't reached the body element
+		if(el !== document.body){
+			
+			// call this function again, passing the parent and the current multiplier
+			return container_pixels(el.parentNode, multiplier);
+
+		}
+	}
+
+	// travel down the tree from the container and make font-size changes as we go
+	function traverse(el, pixels, multiplier){
+
+		// default vars 
+		pixels = pixels || px_to_ems;
+		multiplier = multiplier || 1;
+
+		// get the font size
+		var size = parseFloat(el.style.fontSize);
+
+		// get the operator or keyword
+		var operator = el.style.fontSize.replace(/[0-9]|\./g, '');
+
+		// if the font-size is an absolute value
+		if(operator === 'px' || operator === 'pt'){
+			
+			// adjust the multiplier accordingly
+			multiplier = operator === 'px' ? size / pixels : (size / pixels) / px_to_pt;
+
+			// adjust the pixels
+			pixels *= multiplier
+
+		// if our font-size is in ems
+		}else if(operator === 'em'){
+			
+			// adjust the pixels
+			pixels *= size;
+			
+			// adjust the multiplier accordingly
+			multiplier *= size;
+
+		// if our font-size is in percentage
+		}else if(operator === '%'){
+			
+			// adjust the pixels
+			pixels *= size / 100;
+
+			// adjust the multiplier accordingly
+			multiplier *= size / 100;
+
+		}
+
+		// if there is font-style and the font-style is an absolute value
+		if(el.style.fontSize !== "" && (operator === 'px' || operator === 'pt')){
+			
+			// apply the calculated ems to the element's font-size
+			el.style.fontSize = multiplier + 'em';
+
+		}
+
+		// if we have nodes below the element
+		if(el.childNodes && el.childNodes.length){
+
+			// iterate through the nodes
+			for(var i in el.childNodes){
+
+				// if the node type is an element
+				if(el.childNodes[i].nodeType === Node.ELEMENT_NODE){
+
+					// call the function recursively
+					traverse(el.childNodes[i], pixels, multiplier);
+
+				}
+			}
+		}
+	}
+	
+	// execute
+	traverse(el, container_pixels(el.parentNode));
+
+	// return whatever was passed to begin with
+	return el;
+
+}
+});
 require.register("font-fit/index.js", function(exports, require, module){
+var emify = require('emify');
+
 module.exports = function(el, config){
 
 	// if no config given, assign an empty object
 	config = config || {};
 
 	// establish some default configuration
-	var font_metric = typeof(config.font_metric) !== 'undefined' ? config.font_metric : 'em';
-	var min_size = typeof(config.min_size) !== 'undefined' ? config.min_size : 0;
-	var max_size = typeof(config.max_size) !== 'undefined' ? config.max_size : 50;
-	var fit_width = typeof(config.fit_width) !== 'undefined' ? config.fit_width : true;
-	var fit_height = typeof(config.fit_height) !== 'undefined' ? config.fit_height : true;
-	var incrementation = typeof(config.incrementation) !== 'undefined' ? config.incrementation : .1;
+	var min_size = typeof config.min_size !== 'undefined' ? config.min_size : 0;
+	var max_size = typeof config.max_size !== 'undefined' ? config.max_size : 50;
+	var fit_width = typeof config.fit_width !== 'undefined' ? config.fit_width : true;
+	var fit_height = typeof config.fit_height !== 'undefined' ? config.fit_height : false;
+	var tolerence = typeof config.tollerence !== 'undefined' ? config.tolerence : .01;
+	var multiplier = typeof config.multiplier !== 'undefined' ? config.multiplier : .5;
 
-	// if neither fit_width or fit_height are true
-	if(!fit_width && !fit_height){
+	// if fit_width or fit_height is true
+	if(fit_width || fit_height){
 
-		// quit
-		return el;
+		// emify our element
+		emify(el);
 
-	}
+		// emulate the width of our container without text nodes
+		el.style.fontSize = '0em';
 
-	// get an array of elements from our element argument
-	var els = (typeof(jQuery) !== 'undefined' && el instanceof jQuery) ? el.get() : [el];
-
-	for(var e = 0; e < els.length; e++){
-		
-		// get the element
-		var el = els[e];
-
-		// get the current width and height of the containing element
+		// get the width and height of the containing element with font-size at 0
 		var w = el.offsetWidth;
 		var h = el.offsetHeight;
-		
-		// grab all the children from the containing element
-		var children = el.getElementsByTagName('*');
 
-		// declare an array for populating with relevant elements
-		var relevant = [];
+		// declare a starting size and step amount
+		var size = step = max_size;
 
-		// iterate through the elements children
-		for(var i = 0; i < children.length; i++){
-		  
-		  // get the childNodes of our child element
-	    var nodes = children[i].childNodes;
+		// while our increment is above our tolerence
+		while(step >= tolerence){
 
-	    // iterate through the childNodes
-	    for (var j = nodes.length; j--;) {
-        
-        // if our childNode contains text, and we're not just looking at white space
-        if(nodes[j].nodeType === Node.TEXT_NODE && nodes[j].nodeValue.trim().length) {
-        	
-        	// add the current element containing this childNode to our relevant list
-        	relevant.push(children[i]);
-        
-        }
-	    }
-	  }
+			// adjust our elements font-size
+			el.style.fontSize = size + 'em';
 
-	  // declare a starting size
-	  var size = min_size;
-
-	  // while our size is within our terms
-		while(size <= max_size){
-
-		  // get overflowing status
+			// get overflowing status
 		  var overflow_w = (w < el.scrollWidth);
 		  var overflow_h = (h < el.scrollHeight);
 
 		  // formulate a condition based on the fit_width/fit_height variable flags
 		  var overflowing = (fit_width && overflow_w) || (fit_height && overflow_h);
 
-		  // iterate through our relevant elements and adjust the size accordingly
-		  for(var k = 0; k < relevant.length; k++){
+		  // adjust our size according to our current step amount
+			size = (overflowing) ? size - step : size + step;
 
-		  	// if we're overflowing, bring the font-size down one, otherwise continue enlarging
-			  relevant[k].style.fontSize = ( overflowing ) ? (Math.round((size - incrementation) * 100) / 100) + font_metric : size + font_metric;
+			// if the size is less than our min_size, force it to min_size
+			if(size < min_size){
 
-			}
-
-			// if we're overflowing, quit
-			if( overflowing ){
-
-				// quit
-				break;
-
-			}else{
-
-				// increment size while rounding to 2 decimal places
-				size = Math.round((size + incrementation) * 100) / 100;
+				size = min_size;
 
 			}
+
+			// narrow the range of our step
+			step *= multiplier;
+
 		}
 	}
 
@@ -299,3 +401,5 @@ module.exports = function(el, config){
 
 }
 });
+require.alias("shennan-emify/index.js", "font-fit/deps/emify/index.js");
+require.alias("shennan-emify/index.js", "emify/index.js");
