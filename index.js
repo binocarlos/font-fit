@@ -25,21 +25,7 @@ module.exports = function(el, config){
 		// get the width and height of the containing element with font-size at 0
 		var w = el.offsetWidth;
 		var h = el.offsetHeight;
-
-		// get the bottom padding of the element
-		var padding = parseFloat(el.style.paddingBottom);
-		var metric = el.style.paddingBottom.replace(/[0-9]|\./g, '');
-
-		// calculate the bottom padding based on the metric used
-		padding = metric !== '' ? metric === 'px' ? padding : metric === '%' ? h * (padding / 100) : 0;
-
-		// if bottom padding exists, remove it from our height spec
-		if(padding){
-
-			h -= padding;
-
-		}
-
+		
 		// declare a starting size and step amount
 		var size = step = max_size;
 
