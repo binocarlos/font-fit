@@ -12,10 +12,8 @@ Call on the containing element:
 
     fit(document.getElementById('container'));
 
-By default, *font-fit* ignores the containers height. If you want to base the calculations on containing height only:
+By default, *font-fit* scales text as large as it will go before bleeding the width/height of the container.
 
-    fit(document.getElementById('container'), {fit_width:false, fit_height:true});
+If you want to ignore the height of a container, use the following:
 
-Or make sure that the text fits width and height:
-
-    fit(document.getElementById('container'), {fit_width:true, fit_height:true});
+    fit(document.getElementById('container'), {fit_width:false, fit_height:false});

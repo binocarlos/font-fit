@@ -9,7 +9,7 @@ module.exports = function(el, config){
 	var min_size = typeof config.min_size !== 'undefined' ? config.min_size : 0;
 	var max_size = typeof config.max_size !== 'undefined' ? config.max_size : 50;
 	var fit_width = typeof config.fit_width !== 'undefined' ? config.fit_width : true;
-	var fit_height = typeof config.fit_height !== 'undefined' ? config.fit_height : false;
+	var fit_height = typeof config.fit_height !== 'undefined' ? config.fit_height : true;
 	var tolerence = typeof config.tollerence !== 'undefined' ? config.tolerence : .0001;
 	var multiplier = typeof config.multiplier !== 'undefined' ? config.multiplier : .5;
 
