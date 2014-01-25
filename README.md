@@ -4,7 +4,7 @@
 
 Force your text nodes to fit their parent elements.
 
-##usage
+###usage
 
 Call on the containing element:
 
