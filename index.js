@@ -1,4 +1,19 @@
+/*
+
+	@overview font-fit component
+	@author shennan
+	@version 1.0
+	@link http://github.com/shennan/font-fit
+
+*/
+
 var emify = require('emify');
+
+/*
+
+	Constructor
+
+*/
 
 module.exports = function(el, config){
 

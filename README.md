@@ -16,4 +16,8 @@ By default, *font-fit* scales text as large as it will go before bleeding the wi
 
 If you want to ignore the height of a container, use the following:
 
-    fit(document.getElementById('container'), {fit_width:false, fit_height:false});
+    fit(document.getElementById('container'), {fit_height:false});
+
+Likewise, to ignore width:
+
+    fit(document.getElementById('container'), {fit_width:false});
