@@ -202,6 +202,9 @@ require.relative = function(parent) {
 require.register("shennan-emify/index.js", function(exports, require, module){
 module.exports = function(el){
 
+	// vars
+	var element_node_type = typeof Node && typeof Node.ELEMENT_NODE ? Node.ELEMENT_NODE : 3; /* IE7 fallback */
+
 	// common conversions
 	var px_to_ems = 16;
 	var px_to_pt = .75;
@@ -317,7 +320,7 @@ module.exports = function(el){
 			for(var i in el.childNodes){
 
 				// if the node type is an element
-				if(el.childNodes[i].nodeType === Node.ELEMENT_NODE){
+				if(el.childNodes[i].nodeType === element_node_type){
 
 					// call the function recursively
 					traverse(el.childNodes[i], pixels, multiplier);
@@ -336,7 +339,22 @@ module.exports = function(el){
 }
 });
 require.register("font-fit/index.js", function(exports, require, module){
+/*
+
+	@overview font-fit component
+	@author shennan
+	@version 1.0
+	@link http://github.com/shennan/font-fit
+
+*/
+
 var emify = require('emify');
+
+/*
+
+	Constructor
+
+*/
 
 module.exports = function(el, config){
 

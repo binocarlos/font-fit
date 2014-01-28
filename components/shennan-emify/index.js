@@ -1,5 +1,8 @@
 module.exports = function(el){
 
+	// vars
+	var element_node_type = typeof Node && typeof Node.ELEMENT_NODE ? Node.ELEMENT_NODE : 3; /* IE7 fallback */
+
 	// common conversions
 	var px_to_ems = 16;
 	var px_to_pt = .75;
@@ -115,7 +118,7 @@ module.exports = function(el){
 			for(var i in el.childNodes){
 
 				// if the node type is an element
-				if(el.childNodes[i].nodeType === Node.ELEMENT_NODE){
+				if(el.childNodes[i].nodeType === element_node_type){
 
 					// call the function recursively
 					traverse(el.childNodes[i], pixels, multiplier);
