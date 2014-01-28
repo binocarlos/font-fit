@@ -1,7 +1,7 @@
 module.exports = function(el){
 
 	// vars
-	var element_node_type = typeof Node && typeof Node.ELEMENT_NODE ? Node.ELEMENT_NODE : 3; /* IE7 fallback */
+	var element_node_type = typeof Node !== 'undefined' && typeof Node.ELEMENT_NODE !== 'undefined' ? Node.ELEMENT_NODE : 1; /* IE7 fallback */
 
 	// common conversions
 	var px_to_ems = 16;
