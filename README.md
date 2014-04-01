@@ -8,7 +8,7 @@ Force your text nodes to fit their parent elements.
 
 Call on the containing element:
 
-    var fit = require('fit');
+    var fit = require('font-fit');
 
     fit(document.getElementById('container'));
 
